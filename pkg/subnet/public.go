@@ -107,6 +107,52 @@ func (d *PublicDeployer) AddValidator(
 	return false, tx, nil
 }
 
+func (d *PublicDeployer) RemoveValidator(
+	subnetAuthKeysStrs []string,
+	subnet ids.ID,
+	nodeID ids.NodeID,
+) (bool, *txs.Tx, error) {
+	wallet, err := d.loadWallet(subnet)
+	if err != nil {
+		return false, nil, err
+	}
+	subnetAuthKeys, err := address.ParseToIDs(subnetAuthKeysStrs)
+	if err != nil {
+		return false, nil, err
+	}
+	ok, err := d.checkWalletHasSubnetAuthAddresses(subnetAuthKeys)
+	if err != nil {
+		return false, nil, err
+	}
+	if !ok {
+		return false, nil, ErrNoSubnetAuthKeysInWallet
+	}
+	validator := &validator.SubnetValidator{
+		Validator: validator.Validator{
+			NodeID: nodeID,
+			Start:  uint64(startTime.Unix()),
+			End:    uint64(startTime.Add(duration).Unix()),
+			Wght:   weight,
+		},
+		Subnet: subnet,
+	}
+	if d.usingLedger {
+		ux.Logger.PrintToUser("*** Please sign add validator hash on the ledger device *** ")
+	}
+
+	if len(subnetAuthKeys) == 1 {
+		id, err := wallet.P().IssueRemoveSubnetValidatorTx(nodeID, subnet)
+		if err != nil {
+			return false, nil, err
+		}
+		ux.Logger.PrintToUser("Transaction successful, transaction ID: %s", id)
+		return true, nil, nil
+	}
+
+	// not fully signed not supported yet
+	return false, nil, err
+}
+
 // deploys the given [chain]
 // - verifies that the wallet is one of the subnet auth keys (so as to sign the CreateBlockchain tx)
 // - creates a subnet using the given [controlKeys] and [threshold] as subnet authentication parameters

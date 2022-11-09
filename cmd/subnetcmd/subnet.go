@@ -45,6 +45,8 @@ manage your subnet configurations and live deployments.`,
 	cmd.AddCommand(newJoinCmd())
 	// subnet addValidator
 	cmd.AddCommand(newAddValidatorCmd())
+	// subnet removeValidator
+	cmd.AddCommand(newRemoveValidatorCmd())
 	// subnet export
 	cmd.AddCommand(newExportCmd())
 	// subnet import
