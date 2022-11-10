@@ -3,11 +3,9 @@
 package subnetcmd
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"os"
-	"time"
 
 	"github.com/ava-labs/avalanche-cli/pkg/constants"
 	"github.com/ava-labs/avalanche-cli/pkg/models"
@@ -15,15 +13,7 @@ import (
 	"github.com/ava-labs/avalanche-cli/pkg/subnet"
 	"github.com/ava-labs/avalanche-cli/pkg/ux"
 	"github.com/ava-labs/avalanchego/ids"
-	avago_constants "github.com/ava-labs/avalanchego/utils/constants"
-	"github.com/ava-labs/avalanchego/vms/platformvm"
 	"github.com/spf13/cobra"
-)
-
-var (
-	nodeIDStr    string
-
-	errNoSubnetID = errors.New("failed to find the subnet ID for this subnet, has it been deployed/created on this network?")
 )
 
 // avalanche subnet deploy
@@ -137,7 +127,7 @@ func removeValidator(cmd *cobra.Command, args []string) error {
 	ux.Logger.PrintToUser("Your subnet auth keys for add validator tx creation: %s", subnetAuthKeys)
 
 	if nodeIDStr == "" {
-		nodeID, err = promptNodeID()
+		nodeID, err = promptNodeIDRemove()
 		if err != nil {
 			return err
 		}
@@ -180,12 +170,12 @@ func removeValidator(cmd *cobra.Command, args []string) error {
 	return err
 }
 
-func promptNodeID() (ids.NodeID, error) {
-	ux.Logger.PrintToUser("Next, we need the NodeID of the validator you want to whitelist.")
+func promptNodeIDRemove() (ids.NodeID, error) {
+	ux.Logger.PrintToUser("Next, we need the NodeID of the validator you want to remove.")
 	ux.Logger.PrintToUser("")
 	ux.Logger.PrintToUser("Check https://docs.avax.network/apis/avalanchego/apis/info#infogetnodeid for instructions about how to query the NodeID from your node")
 	ux.Logger.PrintToUser("(Edit host IP address and port to match your deployment, if needed).")
 
-	txt := "What is the NodeID of the validator you'd like to whitelist?"
+	txt := "What is the NodeID of the validator you'd like to remove?"
 	return app.Prompt.CaptureNodeID(txt)
 }

@@ -127,17 +127,8 @@ func (d *PublicDeployer) RemoveValidator(
 	if !ok {
 		return false, nil, ErrNoSubnetAuthKeysInWallet
 	}
-	validator := &validator.SubnetValidator{
-		Validator: validator.Validator{
-			NodeID: nodeID,
-			Start:  uint64(startTime.Unix()),
-			End:    uint64(startTime.Add(duration).Unix()),
-			Wght:   weight,
-		},
-		Subnet: subnet,
-	}
 	if d.usingLedger {
-		ux.Logger.PrintToUser("*** Please sign add validator hash on the ledger device *** ")
+		ux.Logger.PrintToUser("*** Please sign remove validator hash on the ledger device *** ")
 	}
 
 	if len(subnetAuthKeys) == 1 {
